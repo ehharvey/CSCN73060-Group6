@@ -36,7 +36,7 @@ int main()
 	listen(ServerSocket, 1);
 	cout << "Waiting for client connection\n" << endl;
 	ConnectionSocket = SOCKET_ERROR;
-	ConnectionSocket = accept(ServerSocket, NULL, NULL);
+	ConnectionSocket = accept(ServerSocket, NULL, NULL); // this will return SOCKET number if not, it'll remain SOCKET_ERROR
 
 	if (ConnectionSocket == SOCKET_ERROR)
 		return -1;
@@ -47,14 +47,15 @@ int main()
 	{
 		float fValue = 0;
 		memset(RxBuffer, 0, sizeof(RxBuffer));
-		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0); // this receives from client the name of the parameter
 		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);
-		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0)
+		// switch case of some sort making sure the information is being sent correctly
+		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0) 
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
-			UpdateData(0, fValue);
+			UpdateData(0, fValue); // 0 is representing ACCELERATION BODY X
 			fValue = CalcAvg(0);
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
@@ -113,8 +114,8 @@ int main()
 		}
 
 		char Tx[128];
-		sprintf_s(Tx, "%f", fValue);
-		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+		sprintf_s(Tx, "%f", fValue); // sets the Tx buffer to be a formatted string containing the value of the float
+		send(ConnectionSocket, Tx, sizeof(Tx), 0); // sends the buffer to the client
 	}
 
 	closesocket(ConnectionSocket);	//closes incoming socket
@@ -126,24 +127,26 @@ int main()
 
 void UpdateData(unsigned int uiIndex, float value)
 {
+	//if array hasn't been updated with information
 	if (RxData[uiIndex].size == 0)
 	{
-		RxData[uiIndex].pData = new float[1];
-		RxData[uiIndex].pData[0] = value;
-		RxData[uiIndex].size = 1;
+		RxData[uiIndex].pData = new float[1]; // changing size of float array to size 1 since only 1 is needed
+		RxData[uiIndex].pData[0] = value; // setting the first value of array to value
+		RxData[uiIndex].size = 1;  // updating the size of the pData
 	}
-	else
+	else // otherwise we should make sure to 
 	{
-		float* pNewData = new float[RxData[uiIndex].size + 1];
-		for (unsigned int x = 0; x < RxData[uiIndex].size; x++)
-			pNewData[x] = RxData[uiIndex].pData[x];
+		float* pNewData = new float[RxData[uiIndex].size + 1]; // creates a new array of the size + 1, since array should be increasing in size
+		for (unsigned int x = 0; x < RxData[uiIndex].size; x++) // copying all of old array to new array (only the last element of array hasn't been filled)
+			pNewData[x] = RxData[uiIndex].pData[x]; 
 
-		pNewData[RxData[uiIndex].size] = value;
-		delete[] RxData[uiIndex].pData;
-		RxData[uiIndex].pData = pNewData;
-		RxData[uiIndex].size++;
+		pNewData[RxData[uiIndex].size] = value; // filling the last element of new array with  the value
+		delete[] RxData[uiIndex].pData; // delete old array since it was created dynamically (this frees up memory)
+		RxData[uiIndex].pData = pNewData; // set the value of pData(pointer) to the address of the new array pNewData
+		RxData[uiIndex].size++; // update the size of the new Array
 	}
 }
+
 
 float CalcAvg(unsigned int uiIndex)
 {
