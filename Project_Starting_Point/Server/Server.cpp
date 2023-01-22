@@ -5,10 +5,11 @@ using namespace std;
 
 struct StorageTypes 
 { 
-	unsigned int size = 0;
-	float* pData;
+	unsigned int size = 0; //referring to the size of the array at address pData 
+	float* pData; // pointer to future float array
 };
-StorageTypes RxData[7];
+StorageTypes RxData[7]; // an array of size 7 of type StorageTypes 
+						//(stored in memory/as opposed to saved to disk)
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -16,27 +17,32 @@ float CalcAvg(unsigned int);
 int main()
 {
 	WSADATA wsaData;
-	SOCKET ServerSocket, ConnectionSocket;
-	char RxBuffer[128] = {};
+	SOCKET ServerSocket, ConnectionSocket; // creating two sockets, one for server and one for connection
+	char RxBuffer[128] = {}; //Buffer containing 128 bytes
 	sockaddr_in SvrAddr;
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (ServerSocket == SOCKET_ERROR)
+	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // create socket in Internet Domain, sock_stream referring to a reliable connection
+															 // and  the transfer protocol is set to TCP
+	if (ServerSocket == SOCKET_ERROR) //if error creating socket then server shuts down
 		return -1;
 
+	// bind ServerSocket using wildcards 
 	SvrAddr.sin_family = AF_INET;
 	SvrAddr.sin_addr.s_addr = INADDR_ANY;
-	SvrAddr.sin_port = htons(27001);
-	bind(ServerSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
+	SvrAddr.sin_port = htons(27001); // listens on PORT 27001
+	bind(ServerSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr)); 
 
 	if (ServerSocket == SOCKET_ERROR)
 		return -1;
 
-	listen(ServerSocket, 1);
+	// Listen: indicates a readiness to accept client connection requests to ServerSocket but only a maximum of 1 queue of pending connections
+	listen(ServerSocket, 1); 
 	cout << "Waiting for client connection\n" << endl;
 	ConnectionSocket = SOCKET_ERROR;
-	ConnectionSocket = accept(ServerSocket, NULL, NULL); // this will return SOCKET number if not, it'll remain SOCKET_ERROR
+
+	//Accept: accepting a connection request from first in queue, creates a new socket descriptor with same properties as socket  
+	ConnectionSocket = accept(ServerSocket, NULL, NULL); // first param: Socket Descriptor, second: client socket address (NULL if it doesn't matter), third: address length
 
 	if (ConnectionSocket == SOCKET_ERROR)
 		return -1;
@@ -55,7 +61,7 @@ int main()
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
-			UpdateData(0, fValue); // 0 is representing ACCELERATION BODY X
+			UpdateData(0, fValue); // 0 is representing ACCELERATION BODY X, fValue is the float Value
 			fValue = CalcAvg(0);
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
@@ -125,6 +131,10 @@ int main()
 	return 1;
 }
 
+/*given the column index and the current float value
+to add, it will make a new array dynamically, delete the old array,
+set pArray to the new array, and increase the count of size of Array by 1
+*/
 void UpdateData(unsigned int uiIndex, float value)
 {
 	//if array hasn't been updated with information
@@ -147,7 +157,7 @@ void UpdateData(unsigned int uiIndex, float value)
 	}
 }
 
-
+// calculates the average of a column by its given the index 
 float CalcAvg(unsigned int uiIndex)
 {
 	float Avg = 0;
