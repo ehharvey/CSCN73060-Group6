@@ -8,8 +8,11 @@ struct StorageTypes
 	unsigned int size = 0; //referring to the size of the array at address pData 
 	float* pData; // pointer to future float array
 };
-StorageTypes RxData[7]; // an array of size 7 of type StorageTypes 
-						//(stored in memory/as opposed to saved to disk)
+
+/*An array of size 7 of type StorageTypes
+Stored in memory as opposed to saved to disk, if server fails and restarts all data in memory will be lost
+*/
+StorageTypes RxData[7];
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -49,6 +52,18 @@ int main()
 
 	cout << "Connection Established" << endl;
 
+	/* EXPLANATION of while loop as well as REFACTORING IDEAS 
+	1) The server will only connect to the first connection ignore the rest until its buffer's first character matches '*'
+	2) Once its finished with that first connection, the server socket is closed as well and the server application ends
+	REFACTOR IDEAS: 
+	For 1) 			There should be a case in the if elseif else statements that if the RxBuffer string is equal to ex. "DONE"
+					Server will send an ack and then from there memset the RxBuffer to all '*' so that it can leave the while loop
+					which indicates that the client is done sending requests
+	For 2)
+					If multiple clients are in queue instead of just one client to server relationship,
+					then we should reset RxData[i].size to 0 and delete old array
+					then we should the client socket to the next available queue (call accept) and keep server socket running waiting for next client
+	*/
 	while (RxBuffer[0] != '*')
 	{
 		float fValue = 0;
@@ -96,7 +111,7 @@ int main()
 			UpdateData(4, fValue);
 			fValue = CalcAvg(4);
 		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
+		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0) //Does not align with DataFile.txt 'ATTITUDE INDICATOR PICTH DEGREES'
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
@@ -104,7 +119,7 @@ int main()
 			UpdateData(5, fValue);
 			fValue = CalcAvg(5);
 		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
+		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0) // Does not align with DataFile.txt column 'ATTITUDE INDICATOR BANK'
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
@@ -118,6 +133,7 @@ int main()
 			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = 0.0;
 		}
+
 
 		char Tx[128];
 		sprintf_s(Tx, "%f", fValue); // sets the Tx buffer to be a formatted string containing the value of the float

@@ -54,7 +54,7 @@ int main()
 
 
 		getline(ifs, strInput); 
-		if (l > 0) // If we are past the header/column name row
+		if (l > 0){ // If we are past the header/column name row
 			size_t offset, preOffset;
 			offset = preOffset = 0;
 			unsigned int iParamIndex = 0;
