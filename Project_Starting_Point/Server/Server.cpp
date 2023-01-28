@@ -1,5 +1,8 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <vector>
+#include <string>
+#include <iostream>
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
@@ -17,8 +20,69 @@ StorageTypes RxData[7];
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
 
+class LatencyTimer {
+	LARGE_INTEGER frequency{ 0 };
+	LARGE_INTEGER start_t{ 0 }, end_t{ 0 }, elapsedTime{ 0 };
+	vector<pair<string, LONGLONG>> latencyList;
+	
+public:
+	LatencyTimer() : frequency{ 0 }, start_t{ 0 }, end_t{ 0 }, elapsedTime{ 0 } {};
+
+	void start() {
+		QueryPerformanceFrequency(&frequency);
+		QueryPerformanceCounter(&start_t);
+	}
+
+	void end(string functionName = "N/A") {
+		QueryPerformanceCounter(&end_t);
+		// compute the elapsed time in millisec
+		elapsedTime.QuadPart = (end_t.QuadPart - start_t.QuadPart);
+		elapsedTime.QuadPart *= 1000000;
+		elapsedTime.QuadPart /= frequency.QuadPart;
+		
+		latencyList.push_back(make_pair(functionName, elapsedTime.QuadPart));
+	}
+	LARGE_INTEGER getElapsedTime() {
+		return elapsedTime;
+	}
+
+	LONGLONG getElapsedTimeQuadPart() {
+		return elapsedTime.QuadPart;
+	}
+
+	void displayLatencyList() {
+		for (auto a : latencyList) {
+			cout << "Function Name: " << a.first << "\tElapsed Time: " << a.second << endl;
+		}
+	}
+};
+
+void longLoop(void) {
+	for (int i = 0; i < 10000000; i++)
+	{
+		if (i % 2 == 0) {
+			i++;
+		}
+		else {
+			i--;
+		}
+	}
+}
+
+
 int main()
 {
+	LatencyTimer measurement;
+
+	measurement.start();
+	longLoop();
+	measurement.end("longLoop");
+	LARGE_INTEGER myTime = measurement.getElapsedTime();
+	cout << myTime.QuadPart << endl;
+	cout << measurement.getElapsedTimeQuadPart()<<endl;
+	measurement.displayLatencyList();
+
+
 	WSADATA wsaData;
 	SOCKET ServerSocket, ConnectionSocket; // creating two sockets, one for server and one for connection
 	char RxBuffer[128] = {}; //Buffer containing 128 bytes
