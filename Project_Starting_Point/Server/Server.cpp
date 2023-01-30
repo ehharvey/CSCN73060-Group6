@@ -84,13 +84,24 @@ int main()
 	*/
 	while (RxBuffer[0] != '*')
 	{
+
 		float fValue = 0;
 		memset(RxBuffer, 0, sizeof(RxBuffer));
 		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0); // this receives from client the name of the parameter
 		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);
 		// switch case of some sort making sure the information is being sent correctly
+
+#ifdef PROFILE_LATENCY
+		performance_profiler::LatencyMeasurement measurement(workload_ids::SERVER_DETERMINE_CATEGORY);
+#endif // PROFILE_LATENCY
+
 		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0) 
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -99,6 +110,11 @@ int main()
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -107,6 +123,11 @@ int main()
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -115,6 +136,11 @@ int main()
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -123,6 +149,11 @@ int main()
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -131,6 +162,11 @@ int main()
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0) //Does not align with DataFile.txt 'ATTITUDE INDICATOR PICTH DEGREES'
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -139,6 +175,11 @@ int main()
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0) // Does not align with DataFile.txt column 'ATTITUDE INDICATOR BANK'
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
@@ -147,6 +188,11 @@ int main()
 		}
 		else
 		{
+#ifdef PROFILE_LATENCY
+			measurement.end();
+			recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = 0.0;
@@ -175,6 +221,10 @@ set pArray to the new array, and increase the count of size of Array by 1
 */
 void UpdateData(unsigned int uiIndex, float value)
 {
+#ifdef PROFILE_LATENCY
+	performance_profiler::LatencyMeasurement measurement(workload_ids::SERVER_UPDATE_RECEIVED);
+#endif // PROFILE_LATENCY
+
 	//if array hasn't been updated with information
 	if (RxData[uiIndex].size == 0)
 	{
@@ -193,13 +243,18 @@ void UpdateData(unsigned int uiIndex, float value)
 		RxData[uiIndex].pData = pNewData; // set the value of pData(pointer) to the address of the new array pNewData
 		RxData[uiIndex].size++; // update the size of the new Array
 	}
+
+#ifdef PROFILE_LATENCY
+	measurement.end();
+	recorder.add(measurement);
+#endif // PROFILE_LATENCY
 }
 
 // calculates the average of a column by its given the index 
 float CalcAvg(unsigned int uiIndex)
 {
 #ifdef PROFILE_LATENCY
-	performance_profiler::LatencyMeasurement measurement(workload_ids::WORKLOAD_FIVE);
+	performance_profiler::LatencyMeasurement measurement(workload_ids::SERVER_CALCULATE_AVERAGE);
 #endif // PROFILE_LATENCY
 
 	float Avg = 0;

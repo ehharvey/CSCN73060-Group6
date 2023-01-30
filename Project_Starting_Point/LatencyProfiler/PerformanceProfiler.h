@@ -54,6 +54,9 @@ namespace performance_profiler {
 
 
 namespace workload_ids {
-	const performance_profiler::ID WORKLOAD_ONE = 1;
-	const performance_profiler::ID WORKLOAD_FIVE = 5;
+	const performance_profiler::ID CLIENT_FILE_READ = 1;
+	const performance_profiler::ID CLIENT_ROUND_TRIP = 2;
+	const performance_profiler::ID SERVER_DETERMINE_CATEGORY = 3;
+	const performance_profiler::ID SERVER_UPDATE_RECEIVED = 4;
+	const performance_profiler::ID SERVER_CALCULATE_AVERAGE = 5;
 }

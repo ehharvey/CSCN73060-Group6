@@ -67,7 +67,7 @@ int main()
 		// O(n) 
 
 #ifdef PROFILE_LATENCY
-		performance_profiler::LatencyMeasurement measurement(workload_ids::WORKLOAD_ONE);
+		performance_profiler::LatencyMeasurement measurement(workload_ids::CLIENT_FILE_READ);
 #endif // PROFILE_LATENCY
 
 		
@@ -101,10 +101,22 @@ int main()
 				3) Size of the Buffer
 				4) Flag (we set to 0 flags)
 				*/
+				
+				// NOTE: This measurement must be subtracted from the sum of (workload 3, 4, 5)
+#ifdef PROFILE_LATENCY
+				performance_profiler::LatencyMeasurement measurement(workload_ids::CLIENT_ROUND_TRIP);
+#endif // PROFILE_LATENCY
+
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0); // this sends to server the name of parameter, as well as its length
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
 				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0); 
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
+
+#ifdef PROFILE_LATENCY
+				measurement.end();
+				recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
 				preOffset = offset;
 				iParamIndex++; 
