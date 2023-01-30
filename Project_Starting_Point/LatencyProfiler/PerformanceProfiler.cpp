@@ -7,7 +7,6 @@ namespace performance_profiler {
 
 	LatencyMeasurement::LatencyMeasurement(ID id) : id(id)
 	{
-		QueryPerformanceFrequency(&frequency);
 		QueryPerformanceCounter(&start_t);
 	};
 
@@ -15,7 +14,7 @@ namespace performance_profiler {
 	{
 		QueryPerformanceCounter(&end_t);
 		// compute the elapsed time
-		elapsed_time.QuadPart = (end_t.QuadPart - start_t.QuadPart);
+		elapsed_ticks.QuadPart = (end_t.QuadPart - start_t.QuadPart);
 		//elapsedTime.QuadPart *= 1000000;
 		//elapsedTime.QuadPart /= frequency.QuadPart;
 	}
@@ -25,12 +24,15 @@ namespace performance_profiler {
 		return id;
 	}
 
-	LARGE_INTEGER LatencyMeasurement::getElapsedTime() const
+	LARGE_INTEGER LatencyMeasurement::getElapsedTicks() const
 	{
-		return elapsed_time;
+		return elapsed_ticks;
 	}
 
-	LatencyRecorder::LatencyRecorder() { };
+	LatencyRecorder::LatencyRecorder() 
+	{
+		QueryPerformanceFrequency(&frequency);
+	};
 
 	void LatencyRecorder::add(LatencyMeasurement lm)
 	{
@@ -57,7 +59,10 @@ namespace performance_profiler {
 			{
 				json to_disk;
 				to_disk["id"] = latency_measurement.getId();
-				to_disk["latency"] = latency_measurement.getElapsedTime().QuadPart;
+					
+				auto latency_microseconds = (latency_measurement.getElapsedTicks().QuadPart * 1000000) / frequency.QuadPart;
+
+				to_disk["latency"] = latency_microseconds;
 
 				std::filesystem::path filename = std::filesystem::path(std::to_string(measurement_counter) + ".json");
 				measurement_counter++;

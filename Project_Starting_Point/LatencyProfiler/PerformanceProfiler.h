@@ -1,11 +1,14 @@
 /*
-* This module defines profiling code.
+* This module defines profiling code. In microseconds
 * 
 * Currently there exists 2 classes:
 *   LatencyMeasurement: A class that, when constructed, times latency. Use an object's end() method to 
 *		signify when the workload completes
 *	
-*	LatencyRecorder: A class that
+*	LatencyRecorder: A class that tracks LatencyMeasurement objects and can save them to disk as JSONs
+* 
+*	NOTE: This module has been tested on 64 bit architectures. Might not work on 32bit
+*	When saving latencies to disk, LatencyRecorder uses microsecond precision
 */
 
 #pragma once
@@ -25,8 +28,7 @@ namespace performance_profiler {
 
 	class LatencyMeasurement {
 	private:
-		LARGE_INTEGER frequency;
-		LARGE_INTEGER start_t{ 0 }, end_t{ 0 }, elapsed_time{ 0 };
+		LARGE_INTEGER start_t{ 0 }, end_t{ 0 }, elapsed_ticks{ 0 };
 		ID id;
 
 	public:
@@ -36,11 +38,13 @@ namespace performance_profiler {
 
 		ID getId() const;
 
-		LARGE_INTEGER getElapsedTime() const;
+		LARGE_INTEGER getElapsedTicks() const;
 	};
 
 	class LatencyRecorder {
 	private:
+		LARGE_INTEGER frequency; // Ticks per second of CPU
+
 		std::unordered_map<ID, std::vector<LatencyMeasurement>> measurements;
 
 	public:
