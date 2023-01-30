@@ -12,10 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LatencyProfiler", "LatencyProfiler\LatencyProfiler.vcxproj", "{946FD2D3-208C-49EF-9D17-926770ABC27A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		LatencyProfiler|x64 = LatencyProfiler|x64
+		LatencyProfiler|x86 = LatencyProfiler|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -24,6 +28,10 @@ Global
 		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.Debug|x64.Build.0 = Debug|x64
 		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.Debug|x86.ActiveCfg = Debug|Win32
 		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.Debug|x86.Build.0 = Debug|Win32
+		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.LatencyProfiler|x64.ActiveCfg = Release|x64
+		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.LatencyProfiler|x64.Build.0 = Release|x64
+		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.LatencyProfiler|x86.ActiveCfg = Release|Win32
+		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.LatencyProfiler|x86.Build.0 = Release|Win32
 		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.Release|x64.ActiveCfg = Release|x64
 		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.Release|x64.Build.0 = Release|x64
 		{235E9B5C-3305-40EB-94D8-6B6F42727BDA}.Release|x86.ActiveCfg = Release|Win32
@@ -32,10 +40,26 @@ Global
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Debug|x64.Build.0 = Debug|x64
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Debug|x86.ActiveCfg = Debug|Win32
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Debug|x86.Build.0 = Debug|Win32
+		{8CDE399A-F908-4617-8693-494235BBBE3E}.LatencyProfiler|x64.ActiveCfg = Release|x64
+		{8CDE399A-F908-4617-8693-494235BBBE3E}.LatencyProfiler|x64.Build.0 = Release|x64
+		{8CDE399A-F908-4617-8693-494235BBBE3E}.LatencyProfiler|x86.ActiveCfg = Release|Win32
+		{8CDE399A-F908-4617-8693-494235BBBE3E}.LatencyProfiler|x86.Build.0 = Release|Win32
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Release|x64.ActiveCfg = Release|x64
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Release|x64.Build.0 = Release|x64
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Release|x86.ActiveCfg = Release|Win32
 		{8CDE399A-F908-4617-8693-494235BBBE3E}.Release|x86.Build.0 = Release|Win32
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Debug|x64.ActiveCfg = Debug|x64
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Debug|x64.Build.0 = Debug|x64
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Debug|x86.ActiveCfg = Debug|Win32
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Debug|x86.Build.0 = Debug|Win32
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.LatencyProfiler|x64.ActiveCfg = Release|x64
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.LatencyProfiler|x64.Build.0 = Release|x64
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.LatencyProfiler|x86.ActiveCfg = LatencyProfiler|Win32
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.LatencyProfiler|x86.Build.0 = LatencyProfiler|Win32
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Release|x64.ActiveCfg = Release|x64
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Release|x64.Build.0 = Release|x64
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Release|x86.ActiveCfg = Release|Win32
+		{946FD2D3-208C-49EF-9D17-926770ABC27A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

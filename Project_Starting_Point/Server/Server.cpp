@@ -4,6 +4,16 @@
 #include <string>
 #include <iostream>
 #pragma comment(lib, "Ws2_32.lib")
+
+// This macro causes the latency to be measured. Results are stored to a directory
+// called performance_data
+#define PROFILE_LATENCY
+
+// Only include profiler code when necessary
+#ifdef PROFILE_LATENCY
+#include "../LatencyProfiler/PerformanceProfiler.h"
+#endif // PROFILE_LATENCY
+
 using namespace std;
 
 struct StorageTypes 
@@ -20,68 +30,12 @@ StorageTypes RxData[7];
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
 
-class LatencyTimer {
-	LARGE_INTEGER frequency{ 0 };
-	LARGE_INTEGER start_t{ 0 }, end_t{ 0 }, elapsedTime{ 0 };
-	vector<pair<string, LONGLONG>> latencyList;
-	
-public:
-	LatencyTimer() : frequency{ 0 }, start_t{ 0 }, end_t{ 0 }, elapsedTime{ 0 } {};
-
-	void start() {
-		QueryPerformanceFrequency(&frequency);
-		QueryPerformanceCounter(&start_t);
-	}
-
-	void end(string functionName = "N/A") {
-		QueryPerformanceCounter(&end_t);
-		// compute the elapsed time in millisec
-		elapsedTime.QuadPart = (end_t.QuadPart - start_t.QuadPart);
-		elapsedTime.QuadPart *= 1000000;
-		elapsedTime.QuadPart /= frequency.QuadPart;
-		
-		latencyList.push_back(make_pair(functionName, elapsedTime.QuadPart));
-	}
-	LARGE_INTEGER getElapsedTime() {
-		return elapsedTime;
-	}
-
-	LONGLONG getElapsedTimeQuadPart() {
-		return elapsedTime.QuadPart;
-	}
-
-	void displayLatencyList() {
-		for (auto a : latencyList) {
-			cout << "Function Name: " << a.first << "\tElapsed Time: " << a.second << endl;
-		}
-	}
-};
-
-void longLoop(void) {
-	for (int i = 0; i < 10000000; i++)
-	{
-		if (i % 2 == 0) {
-			i++;
-		}
-		else {
-			i--;
-		}
-	}
-}
-
+#ifdef PROFILE_LATENCY
+performance_profiler::LatencyRecorder recorder;
+#endif // PROFILE_LATENCY
 
 int main()
 {
-	LatencyTimer measurement;
-
-	measurement.start();
-	longLoop();
-	measurement.end("longLoop");
-	LARGE_INTEGER myTime = measurement.getElapsedTime();
-	cout << myTime.QuadPart << endl;
-	cout << measurement.getElapsedTimeQuadPart()<<endl;
-	measurement.displayLatencyList();
-
 
 	WSADATA wsaData;
 	SOCKET ServerSocket, ConnectionSocket; // creating two sockets, one for server and one for connection
@@ -208,6 +162,10 @@ int main()
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
 
+#ifdef PROFILE_LATENCY
+	recorder.saveToDisk();
+#endif // PROFILE_LATENCY
+
 	return 1;
 }
 
@@ -240,10 +198,20 @@ void UpdateData(unsigned int uiIndex, float value)
 // calculates the average of a column by its given the index 
 float CalcAvg(unsigned int uiIndex)
 {
+#ifdef PROFILE_LATENCY
+	performance_profiler::LatencyMeasurement measurement(workload_ids::WORKLOAD_FIVE);
+#endif // PROFILE_LATENCY
+
 	float Avg = 0;
 	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)
 		Avg += RxData[uiIndex].pData[x];
 
 	Avg = Avg / RxData[uiIndex].size;
+
+#ifdef PROFILE_LATENCY
+	measurement.end();
+	recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 	return Avg;
 }

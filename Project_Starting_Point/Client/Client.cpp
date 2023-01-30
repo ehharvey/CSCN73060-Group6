@@ -4,12 +4,28 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
+// This macro causes the latency to be measured. Results are stored to a directory
+// called performance_data
+#define PROFILE_LATENCY
+
+#ifdef PROFILE_LATENCY
+#include "../LatencyProfiler/PerformanceProfiler.h"
+#endif // PROFILE_LATENCY
+
+
 using namespace std;
 
 unsigned int GetSize();
 
 int main()
 {
+	// Profiler initialization
+#ifdef PROFILE_LATENCY
+	performance_profiler::LatencyRecorder recorder = performance_profiler::LatencyRecorder();
+#endif // PROFILE_LATENCY
+
+	
 	WSADATA wsaData;
 	SOCKET ClientSocket;   
 	sockaddr_in SvrAddr;  
@@ -49,8 +65,19 @@ int main()
 		*/
 		ifstream ifs("DataFile.txt"); 
 		// O(n) 
+
+#ifdef PROFILE_LATENCY
+		performance_profiler::LatencyMeasurement measurement(workload_ids::WORKLOAD_ONE);
+#endif // PROFILE_LATENCY
+
+		
 		for (unsigned int iStart = 0; iStart < l; iStart++) 
 			getline(ifs, strInput);
+
+#ifdef PROFILE_LATENCY
+		measurement.end();
+		recorder.add(measurement);
+#endif // PROFILE_LATENCY
 
 
 		getline(ifs, strInput); 
@@ -102,6 +129,8 @@ int main()
 
 	closesocket(ClientSocket);
 	WSACleanup();
+
+	recorder.saveToDisk();
 
 	return 1;
 }
