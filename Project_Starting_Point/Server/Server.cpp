@@ -1,6 +1,19 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <vector>
+#include <string>
+#include <iostream>
 #pragma comment(lib, "Ws2_32.lib")
+
+// This macro causes the latency to be measured. Results are stored to a directory
+// called performance_data
+#define PROFILE_LATENCY
+
+// Only include profiler code when necessary
+#ifdef PROFILE_LATENCY
+#include "../LatencyProfiler/PerformanceProfiler.h"
+#endif // PROFILE_LATENCY
+
 using namespace std;
 
 struct StorageTypes 
@@ -17,8 +30,13 @@ StorageTypes RxData[7];
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
 
+#ifdef PROFILE_LATENCY
+performance_profiler::LatencyRecorder recorder;
+#endif // PROFILE_LATENCY
+
 int main()
 {
+
 	WSADATA wsaData;
 	SOCKET ServerSocket, ConnectionSocket; // creating two sockets, one for server and one for connection
 	char RxBuffer[128] = {}; //Buffer containing 128 bytes
@@ -144,6 +162,10 @@ int main()
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
 
+#ifdef PROFILE_LATENCY
+	recorder.saveToDisk();
+#endif // PROFILE_LATENCY
+
 	return 1;
 }
 
@@ -176,10 +198,20 @@ void UpdateData(unsigned int uiIndex, float value)
 // calculates the average of a column by its given the index 
 float CalcAvg(unsigned int uiIndex)
 {
+#ifdef PROFILE_LATENCY
+	performance_profiler::LatencyMeasurement measurement(workload_ids::WORKLOAD_FIVE);
+#endif // PROFILE_LATENCY
+
 	float Avg = 0;
 	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)
 		Avg += RxData[uiIndex].pData[x];
 
 	Avg = Avg / RxData[uiIndex].size;
+
+#ifdef PROFILE_LATENCY
+	measurement.end();
+	recorder.add(measurement);
+#endif // PROFILE_LATENCY
+
 	return Avg;
 }
