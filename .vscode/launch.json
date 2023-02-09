@@ -6,10 +6,14 @@
             "preLaunchTask": "build",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/Client",
+            "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/Main/Main",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/FlightLoggingSoftware/Client/",
+            "sourceFileMap": { 
+                "/proc/self/cwd": "${workspaceFolder}/FlightLoggingSoftware",
+                "./": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/" 
+             },
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -27,7 +31,11 @@
             "preLaunchTask": "build",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Server/Server",
+            "sourceFileMap": { 
+                "/proc/self/cwd": "${workspaceFolder}/FlightLoggingSoftware",
+                "./": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/" 
+             },
+            "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Server/Main/Main",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/FlightLoggingSoftware/Server/",
