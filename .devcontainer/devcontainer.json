@@ -16,9 +16,14 @@
 		"vscode": {
 			"extensions": [
 				"ms-vscode.cpptools-extension-pack"
-			]
+			],
+			"settings": {
+				"C_Cpp.default.cppStandard": "c++20"
+			}
 		}
-	}
+	},
+
+	"postAttachCommand": "sudo apt update && sudo apt-get install -y libboost-all-dev"
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

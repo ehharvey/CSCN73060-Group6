@@ -4,6 +4,9 @@ Client::CsvReader::CsvReader(std::filesystem::path path)
 {
 }
 
+void Client::CsvReader::start()
+{
+}
 
 bool Client::CsvReader::isAtEnd()
 {

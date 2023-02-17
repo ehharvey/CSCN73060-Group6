@@ -15,7 +15,6 @@ namespace Client {
 
     class CsvReader {
         private:
-        std::thread worker;
 
         public:
         // Opens the file
@@ -24,6 +23,9 @@ namespace Client {
         //   worker does not start
         //   Throws exception (or just crash)
         CsvReader(std::filesystem::path path);
+
+        //
+        void start();
 
         // Retrieves the next from the file
         // and constructs a transmission

@@ -3,17 +3,24 @@
 #include "../ResponseReceiver/ResponseReceiver.h"
 #include "../NetworkClient/NetworkClient.h"
 #include "../../DataProtocol/DataProtocol.h"
+#include <boost/asio/thread_pool.hpp>
+#include <boost/asio/post.hpp>
+
+#define NUM_THREADS 8
 
 int main(void)
 {
     Client::CsvReader csv_reader("DataFile.txt");
+
     Client::ResponseReceiver response_receiver(&std::cout);
     
     Client::NetworkClient network_client(
         // This lambda defines what to do whenever the client
         // receives data. IT NEEDS TO BE THREAD SAFE
         [&response_receiver](std::unique_ptr<std::byte> buf) {
+
             response_receiver.addResponse(std::move(buf));
+
         }
     );
 

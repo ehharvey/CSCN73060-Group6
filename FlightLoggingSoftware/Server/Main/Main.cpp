@@ -15,14 +15,13 @@ int main(void)
         // This NEEDS TO BE THREAD SAFE
         [&] (std::unique_ptr<std::byte> payload)
         {
-            auto parsed = DataProtocol::ServerTransmissionParser(std::move(payload));
+            auto parsed = DataProtocol::ClientTransmission(std::move(payload));
             
-            // Use average_calculator to get new average
+            // Post Transmission to JobQueue
 
-            // Use data_store to add new value
+            // Notify CalcAvg + Send Response
 
-            // Return to sender
-            return std::unique_ptr<std::byte>();
+            // Notify DataStore
         }
     );
 
