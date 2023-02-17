@@ -19,7 +19,7 @@ namespace DataProtocol {
         private:
         // Holds the payload
         // Will be null after getPayload() is called
-        std::unique_ptr<std::byte> payload;
+        std::shared_ptr<std::byte> payload;
         std::size_t payload_size;
 
         public:
@@ -29,23 +29,26 @@ namespace DataProtocol {
             std::unique_ptr<float> column_values
         );
 
-        uint_fast8_t getFlightId();
-        uint_fast32_t getNumberOfColumuns();
-        uint_fast32_t getNumberOfBytesThatFollow();
-        const float* getColumnValues();
+        ClientTransmission(
+            std::unique_ptr<std::byte> payload
+        );
 
+        uint_fast8_t getFlightId();   
         std::size_t getPayloadSize();
-
-        std::unique_ptr<std::byte> getPayload();
+        
+        std::shared_ptr<std::byte> getPayload();
     };
+    
 
-    class ServerTransmissionParser
+    class ServerTransmission
     {
         private:
-        std::unique_ptr<std::byte> payload;
+        std::shared_ptr<std::byte> payload;
 
         public:
-        ServerTransmissionParser(std::unique_ptr<std::byte> payload);
+        ServerTransmission(std::shared_ptr<std::byte> payload);
+
+        ServerTransmission(uint_fast8_t flight_id);
 
         uint_fast8_t getFlightId();
         uint_fast32_t getNumberOfBytesThatFollow();
