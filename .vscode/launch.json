@@ -28,7 +28,7 @@
 
     {
       "name": "Server",
-      "preLaunchTask": "build",
+      "preLaunchTask": "buildServer",
       "type": "cppdbg",
       "request": "launch",
       "sourceFileMap": {

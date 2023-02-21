@@ -5,4 +5,7 @@ cc_library(
     srcs = ["NetworkServer.cpp"],
     hdrs = ["NetworkServer.h"],
     visibility = ["//Server/Main:__pkg__"],
+    deps = [
+        "//Server/NetworkServer/Connection",
+    ]
 )

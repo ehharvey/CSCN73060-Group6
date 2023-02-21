@@ -14,6 +14,18 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "buildServer",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/FlightLoggingSoftware"
+      },
+      "command": "bazel build --compilation_mode=dbg //Server/Main",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }

@@ -65,6 +65,17 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "numbers": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "csignal": "cpp",
+    "complex": "cpp",
+    "condition_variable": "cpp",
+    "coroutine": "cpp",
+    "list": "cpp",
+    "source_location": "cpp",
+    "future": "cpp",
+    "mutex": "cpp",
+    "semaphore": "cpp",
+    "typeindex": "cpp",
+    "variant": "cpp"
   }
 }
