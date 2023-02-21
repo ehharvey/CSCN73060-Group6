@@ -1,10 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
 cc_binary(
     name = "Main",
-    srcs = [ "Main.cpp" ],
-    deps = [ 
-        "//Server/AverageCalculator:AverageCalculator",
-        "//Server/DataStore:DataStore",
+    srcs = ["Main.cpp"],
+    deps = [
+        "//DataProtocol",
+        "//Server/AverageCalculator",
+        "//Server/DataStore",
         "//Server/NetworkServer",
-        "//DataProtocol:DataProtocol"
-    ]
+    ],
 )

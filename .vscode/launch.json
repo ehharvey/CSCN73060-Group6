@@ -1,63 +1,63 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Client",
+      "preLaunchTask": "build",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/Main/Main",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/FlightLoggingSoftware/Client/",
+      "sourceFileMap": {
+        "/proc/self/cwd": "${workspaceFolder}/FlightLoggingSoftware",
+        "./": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/"
+      },
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
         {
-            "name": "Client",
-            "preLaunchTask": "build",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/Main/Main",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/FlightLoggingSoftware/Client/",
-            "sourceFileMap": { 
-                "/proc/self/cwd": "${workspaceFolder}/FlightLoggingSoftware",
-                "./": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/" 
-             },
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": false
-                }
-            ]
-        },
-
-        {
-            "name": "Server",
-            "preLaunchTask": "build",
-            "type": "cppdbg",
-            "request": "launch",
-            "sourceFileMap": { 
-                "/proc/self/cwd": "${workspaceFolder}/FlightLoggingSoftware",
-                "./": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/" 
-             },
-            "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Server/Main/Main",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/FlightLoggingSoftware/Server/",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": false
-                }
-            ]
-        },
-    ],
-
-    "compounds": [
-        {
-          "name": "Server/Client",
-          "configurations": ["Server", "Client"],
-          "preLaunchTask": "build",
-          "stopAll": true,
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": false
         }
       ]
+    },
+
+    {
+      "name": "Server",
+      "preLaunchTask": "build",
+      "type": "cppdbg",
+      "request": "launch",
+      "sourceFileMap": {
+        "/proc/self/cwd": "${workspaceFolder}/FlightLoggingSoftware",
+        "./": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/"
+      },
+      "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Server/Main/Main",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/FlightLoggingSoftware/Server/",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": false
+        }
+      ]
+    }
+  ],
+
+  "compounds": [
+    {
+      "name": "Server/Client",
+      "configurations": ["Server", "Client"],
+      "preLaunchTask": "build",
+      "stopAll": true
+    }
+  ]
 }

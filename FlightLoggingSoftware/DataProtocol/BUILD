@@ -1,6 +1,8 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
 cc_library(
     name = "DataProtocol",
-    hdrs = [ "DataProtocol.h" ],
-    srcs = [ "DataProtocol.cpp" ],
-    visibility = [ "//visibility:public" ]
+    srcs = ["DataProtocol.cpp"],
+    hdrs = ["DataProtocol.h"],
+    visibility = ["//visibility:public"],
 )
