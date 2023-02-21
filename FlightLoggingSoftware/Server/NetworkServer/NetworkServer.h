@@ -1,22 +1,26 @@
 #pragma once
 
-#include <functional>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <cstdlib>
+#include <iostream>
+
 #include <cstddef>
+#include <functional>
 #include <memory>
 
 namespace Server {
-    class NetworkServer
-    {
-    private:
-        void stop();
-    public:
-        // Callback function is called whenever the server receives a packet
-        NetworkServer(
-            std::function< void (std::unique_ptr<std::byte>) > receive_callback
-        );
 
-        void waitUntilStops();
+class NetworkServer {
+private:
+  boost::asio::io_service &io_service_;
+  boost::asio::ip::tcp::acceptor acceptor_;
 
-        ~NetworkServer();
-    };
-}
+  void handle_accept(Connection *new_session,
+                     const boost::system::error_code &error);
+
+public:
+  NetworkServer(boost::asio::io_service &io_service, short port);
+};
+
+} // namespace Server
