@@ -5,8 +5,6 @@ cc_binary(
     srcs = ["Main.cpp"],
     deps = [
         "//DataProtocol",
-        "//Server/AverageCalculator",
-        "//Server/DataStore",
         "//Server/NetworkServer",
     ],
 )

@@ -1,4 +1,5 @@
 #include "CsvReader.h"
+#include "rapidcsv.h"
 
 Client::CsvReader::CsvReader(std::filesystem::path path)
 {

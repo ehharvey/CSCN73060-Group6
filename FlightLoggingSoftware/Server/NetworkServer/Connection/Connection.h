@@ -4,18 +4,18 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
+#include "../../../DataProtocol/DataProtocol.h"
 
- // Duplicate of NetworkServer.h
+// Duplicate of NetworkServer.h
 // TODO: Move this typedef into a separate file (away from NetworkServer or Connection)
-typedef std::function<void(std::byte*, std::size_t)> CallbackFunction;
+typedef std::function<void(std::byte*)> CallbackFunction;
 
 class Connection {
 private:
   CallbackFunction callback;
   boost::asio::ip::tcp::socket socket_;
 
-  enum { max_length = 1024 };
-  std::byte data_[max_length];
+  std::byte data_[DataProtocol::PACKET_SIZE];
 
   void handle_read(const boost::system::error_code &error,
                    size_t bytes_transferred);

@@ -11,7 +11,7 @@
 
 namespace Server {
 
-typedef std::function<void(std::byte*, std::size_t)> CallbackFunction;
+typedef std::function<void(std::byte*)> CallbackFunction;
 
 class NetworkServer {
 private:

@@ -1,10 +1,9 @@
-#pragma once
-
-#include <thread>
 #include <iostream>
 #include <memory>
 #include <filesystem>
 #include "../../DataProtocol/DataProtocol.h"
+
+#pragma once
 
 namespace Client {
     // Notes:

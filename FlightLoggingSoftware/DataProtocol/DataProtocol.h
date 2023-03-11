@@ -1,56 +1,35 @@
-#pragma once
-
 #include <iostream>
 #include <memory>
 
+#pragma once
+
 namespace DataProtocol {
-    typedef uint8_t FlightID;
-    typedef uint32_t DataSize;
-    typedef float FlightValue;
-    
-
-    struct Packet {
-        FlightID flight_id;
-    };
-
+    // 64 bits (8 bytes): Flight ID
+    // 64 bits (8 bytes): Second delta
+    // 64 bits (8 bytes): fuel level
+    // 24 bytes total
+    const uint_fast8_t PACKET_SIZE = sizeof(uint64_t) * 3;
 
     class ClientTransmission
     {
         private:
-        // Holds the payload
-        // Will be null after getPayload() is called
-        std::shared_ptr<std::byte> payload;
-        std::size_t payload_size;
+        std::array<std::byte, PACKET_SIZE> payload;
 
         public:
         ClientTransmission(
-            uint_fast8_t flight_id,
-            uint_fast32_t number_of_columns,
-            std::unique_ptr<float> column_values
+            uint_fast64_t flight_id,
+            uint_fast64_t secondDelta,
+            uint_fast64_t fuelLevel
         );
 
         ClientTransmission(
             std::unique_ptr<std::byte> payload
         );
 
-        uint_fast8_t getFlightId();   
-        std::size_t getPayloadSize();
-        
-        std::shared_ptr<std::byte> getPayload();
-    };
-    
+        uint_fast64_t getFlightId();
+        uint_fast64_t getSecondDelta();
+        uint_fast64_t getFuelLevel();
 
-    class ServerTransmission
-    {
-        private:
-        std::shared_ptr<std::byte> payload;
-
-        public:
-        ServerTransmission(std::shared_ptr<std::byte> payload);
-
-        ServerTransmission(uint_fast8_t flight_id);
-
-        uint_fast8_t getFlightId();
-        uint_fast32_t getNumberOfBytesThatFollow();
+        std::byte* getPayload();
     };
 }
