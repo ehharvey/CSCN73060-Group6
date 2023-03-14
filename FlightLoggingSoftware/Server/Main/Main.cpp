@@ -50,26 +50,31 @@ int main(void) {
   std::function<void(std::byte*)> test = [&](std::byte* payload) {
         for (std::size_t i = 0; i < DataProtocol::PACKET_SIZE; i++)
         {
-          for (int i = 0; i < DataProtocol::PACKET_SIZE; i++)
+          // for (int i = 0; i < DataProtocol::PACKET_SIZE; i++)
+          // {
+          //   std::cout << char(payload[i]);
+          //   std::cout << std::endl;
+          // }
+
+          DataProtocol::ClientTransmission transmission = DataProtocol::ClientTransmission(payload);
+          auto flight_id = transmission.getFlightId();
+
+          lock.lock();
+          if (fuel_averages.count(flight_id) > 0)
           {
-            std::cout << char(payload[i]);
-            std::cout << std::endl;
+            fuel_averages.at(flight_id).setFuelCurrent(transmission.getFuelLevel());
+            fuel_averages.at(flight_id).setSecondDelta(transmission.getSecondDelta());
           }
-
-          // DataProtocol::ClientTransmission transmission = DataProtocol::ClientTransmission(payload);
-          // auto flight_id = transmission.getFlightId();
-
-          // lock.lock();
-          // if (fuel_averages.count(flight_id) > 0)
-          // {
-          //   fuel_averages.at(flight_id).setFuelCurrent(transmission.getFuelLevel());
-          //   fuel_averages.at(flight_id).setSecondDelta(transmission.getSecondDelta());
-          // }
-          // else
-          // {
-          //   fuel_averages.emplace(flight_id, transmission.getFuelLevel());
-          // }
-          // lock.unlock();
+          else
+          {
+            if (transmission.getSecondDelta() == 0) {
+              io_service.stop();
+            }
+            else {
+              fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+            }
+          }
+          lock.unlock();
         }
       };
 
