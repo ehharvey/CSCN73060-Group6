@@ -1,16 +1,14 @@
 #include "NetworkClient.h"
 
-#define _FlightLoggingSoftwareDebug
-
 #ifdef _FlightLoggingSoftwareDebug
 #include <iostream>
 #endif
 
 Client::NetworkClient::NetworkClient(
-    boost::asio::io_context &io_context,
+    boost::asio::io_service &io_service,
     const boost::asio::ip::tcp::resolver::results_type &ENDPOINTS)
-    : io_context(io_context), socket(io_context) {
-  connect(ENDPOINTS);
+    : io_service(io_service), socket(io_service) {
+  this->connect(ENDPOINTS);
 }
 
 Client::NetworkClient::~NetworkClient() {}
@@ -70,9 +68,9 @@ void Client::NetworkClient::send(
 }
 
 void Client::NetworkClient::close() {
-  boost::asio::post(this->io_context, [this]() { this->socket.close(); });
+  boost::asio::post(this->io_service, [this]() { this->socket.close(); });
 }
 
 boost::asio::io_context &Client::NetworkClient::getIoContext() {
-  return this->io_context;
+  return this->io_service;
 }

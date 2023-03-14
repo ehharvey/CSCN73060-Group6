@@ -6,5 +6,7 @@ cc_binary(
     deps = [
         "//Client/NetworkClient",
         "//DataProtocol",
+        "@boost//:asio"
     ],
+    linkopts = ["-lpthread"]
 )

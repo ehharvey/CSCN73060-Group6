@@ -14,12 +14,12 @@ namespace Client {
     class NetworkClient
     {
     private:
-        boost::asio::io_context& io_context;
+        boost::asio::io_service& io_service;
         boost::asio::ip::tcp::socket socket;
 
         NetworkClient();
     public:
-        NetworkClient(boost::asio::io_context& io_context,
+        NetworkClient(boost::asio::io_service& io_service,
         const boost::asio::ip::tcp::resolver::results_type& ENDPOINTS);
         ~NetworkClient();
 

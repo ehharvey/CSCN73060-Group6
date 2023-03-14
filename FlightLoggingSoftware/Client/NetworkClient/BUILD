@@ -5,5 +5,5 @@ cc_library(
     srcs = ["NetworkClient.cpp"],
     hdrs = ["NetworkClient.h"],
     visibility = ["//Client/Main:__pkg__"],
-    deps = ["//DataProtocol"],
+    deps = ["//DataProtocol", "@boost//:asio"],
 )
