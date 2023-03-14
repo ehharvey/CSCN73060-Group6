@@ -6,6 +6,7 @@ cc_library(
     hdrs = ["NetworkServer.h"],
     visibility = ["//Server/Main:__pkg__"],
     deps = [
-        "//Server/NetworkServer/Connection",
+        "//Server/NetworkServer/Connection", 
+        "@boost//:asio"
     ]
 )

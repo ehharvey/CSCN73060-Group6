@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
-
+#include <array>
+#include <cstddef>
 #pragma once
 
 namespace DataProtocol {

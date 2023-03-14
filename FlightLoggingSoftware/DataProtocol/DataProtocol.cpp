@@ -40,7 +40,7 @@ uint_fast64_t ClientTransmission::getFuelLevel() {
   return fuelLevel;
 }
 
-std::byte *ClientTransmission::getPayload() { return payload.begin(); }
+std::byte *ClientTransmission::getPayload() { return payload.data(); }
 
 } // namespace DataProtocol
 

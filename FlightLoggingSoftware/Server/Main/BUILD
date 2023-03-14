@@ -6,5 +6,6 @@ cc_binary(
     deps = [
         "//DataProtocol",
         "//Server/NetworkServer",
+        "@boost//:asio"
     ],
 )
