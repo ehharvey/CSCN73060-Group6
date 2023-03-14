@@ -1,19 +1,31 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "type": "shell",
-            "options": {
-                "cwd": "${workspaceFolder}/FlightLoggingSoftware"
-            },
-            "command": "bazelisk build --compilation_mode=dbg //...",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-        }
-    ]
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/FlightLoggingSoftware"
+      },
+      "command": "bazel build --compilation_mode=dbg //...",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "buildServer",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/FlightLoggingSoftware"
+      },
+      "command": "bazel build --compilation_mode=dbg //Server/Main",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
 }
