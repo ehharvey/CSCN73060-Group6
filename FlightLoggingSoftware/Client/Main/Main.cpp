@@ -1,32 +1,32 @@
+#include <boost/asio.hpp>
 #include <iostream>
-#include "../NetworkClient/NetworkClient.h"
-#include "../../DataProtocol/DataProtocol.h"
-#include <boost/asio/thread_pool.hpp>
-#include <boost/asio/post.hpp>
-#include <thread>
 
+int main() {
+    try {
+        // Create an io_context object
+        boost::asio::io_context io_context;
 
-#define NUM_THREADS 8
+        // Create a socket object
+        boost::asio::ip::tcp::socket socket(io_context);
 
-int main(void)
-{
-    boost::asio::io_context io_context;
-    boost::asio::ip::tcp::resolver resolver(io_context);
-    auto endpoints = resolver.resolve("localhost", "1234");
-    std::thread t([&io_context]() { io_context.run(); });
+        // Resolve the localhost address and port number
+        boost::asio::ip::tcp::resolver resolver(io_context);
+        boost::asio::ip::tcp::resolver::results_type endpoints =
+            resolver.resolve("localhost", "1234");
 
-    Client::NetworkClient network_client(io_context, endpoints);
+        // Connect to the server
+        boost::asio::connect(socket, endpoints);
 
-    for (int i = 0; i < 10; i++)
-    {
-        std::unique_ptr<DataProtocol::Transmission> dummy \
-            = std::make_unique<DataProtocol::DummyTransmission>();
+        // Send 24 bytes of data to the server
+        std::string message = "This is a test message.";
+        boost::asio::write(socket, boost::asio::buffer(message, 24));
 
-        network_client.send(std::move(dummy));
+        // Close the socket
+        socket.close();
+
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }
-
-    network_client.close();
-    t.join();
 
     return 0;
 }
