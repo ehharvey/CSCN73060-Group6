@@ -3,8 +3,14 @@
 #include <boost/asio.hpp>
 #include <iostream>
 
-int main() {
+int main(int argc, char *argv[]) {
   try {
+    // First argument is IP or hostname
+    char* ip = argv[1];
+
+    // Second is flight ID
+    uint_fast64_t flight_id = atoi(argv[2]);
+
     // Create an io_context object
     boost::asio::io_context io_context;
 
@@ -14,12 +20,12 @@ int main() {
     // Resolve the localhost address and port number
     boost::asio::ip::tcp::resolver resolver(io_context);
     boost::asio::ip::tcp::resolver::results_type endpoints =
-        resolver.resolve("localhost", "1234");
+        resolver.resolve(ip, "1234");
 
     // Connect to the server
     boost::asio::connect(socket, endpoints);
 
-    uint_fast64_t flight_id = 1;
+
     uint_fast64_t secondDelta = 0;
     uint_fast64_t fuelLevel = 10000;
 

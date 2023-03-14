@@ -68,7 +68,7 @@ int main(void) {
           else
           {
             if (transmission.getSecondDelta() == 0) {
-              io_service.stop();
+              // io_service.stop();
             }
             else {
               fuel_averages.emplace(flight_id, transmission.getFuelLevel());

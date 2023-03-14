@@ -8,5 +8,4 @@ cc_binary(
         "//DataProtocol",
         "@boost//:asio"
     ],
-    linkopts = ["-lpthread"]
 )
