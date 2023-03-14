@@ -1,17 +1,78 @@
 #include "NetworkClient.h"
 
-Client::NetworkClient::NetworkClient(std::function<void(std::unique_ptr<std::byte> buf)> recv_callback)
-{
+#define _FlightLoggingSoftwareDebug
+
+#ifdef _FlightLoggingSoftwareDebug
+#include <iostream>
+#endif
+
+Client::NetworkClient::NetworkClient(
+    boost::asio::io_context &io_context,
+    const boost::asio::ip::tcp::resolver::results_type &ENDPOINTS)
+    : io_context(io_context), socket(io_context) {
+  connect(ENDPOINTS);
 }
 
-Client::NetworkClient::~NetworkClient()
-{
+Client::NetworkClient::~NetworkClient() {}
+
+void Client::NetworkClient::connect(
+    const boost::asio::ip::tcp::resolver::results_type &ENDPOINTS) {
+  boost::asio::async_connect(
+      this->socket, ENDPOINTS,
+      [this](boost::system::error_code error, boost::asio::ip::tcp::endpoint) {
+        if (error) {
+#ifdef _FlightLoggingSoftwareDebug
+          std::cout << "NetworkClient: Error on connect. " << error.message()
+                    << std::endl;
+#endif
+        } else {
+#ifdef _FlightLoggingSoftwareDebug
+          std::cout << "NetworkClient: Successfully connected" << std::endl;
+#endif
+        }
+      });
 }
 
-void Client::NetworkClient::connect(const char *ip)
-{
+void Client::NetworkClient::send(
+    std::unique_ptr<DataProtocol::Transmission> transmission) {
+  // Post a write that sends the transmission over
+
+  DataProtocol::Transmission *_raw = transmission.release();
+
+  boost::asio::async_write(
+      this->socket,
+      boost::asio::buffer(_raw->getPayload(), DataProtocol::PACKET_SIZE),
+// Callback to perform when write concludes
+#ifdef _FlightLoggingSoftwareDebug
+      [this, &transmission, &_raw](boost::system::error_code error,
+                                   std::size_t /* length */)
+#else
+      [this, &_raw](boost::system::error_code error, std::size_t /* length */)
+#endif
+      {
+        if (error) {
+#ifdef _FlightLoggingSoftwareDebug
+          std::cout << "NetworkClient: Error on sending data. "
+                    << error.message() << std::endl;
+#endif
+        } else {
+#ifdef _FlightLoggingSoftwareDebug
+          char *message = new char[DataProtocol::PACKET_SIZE + 1];
+          memcpy(message, transmission.get()->getPayload(),
+                 DataProtocol::PACKET_SIZE);
+          message[DataProtocol::PACKET_SIZE] = '\0';
+          std::cout << "NetworkClient: Sent" << message << std::endl;
+#endif
+        }
+
+        free(_raw);
+      });
 }
 
-void Client::NetworkClient::send(std::unique_ptr<std::byte> buf, std::size_t size)
-{
+void Client::NetworkClient::close() {
+  boost::asio::post(this->io_context, [this]() { this->socket.close(); });
+}
+
+boost::asio::io_context &Client::NetworkClient::getIoContext() {
+  return this->io_context;
 }

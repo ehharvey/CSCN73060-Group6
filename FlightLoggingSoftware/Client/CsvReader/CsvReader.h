@@ -2,6 +2,7 @@
 #include <memory>
 #include <filesystem>
 #include "../../DataProtocol/DataProtocol.h"
+#include <thread>
 
 #pragma once
 
@@ -14,6 +15,7 @@ namespace Client {
 
     class CsvReader {
         private:
+        
 
         public:
         // Opens the file
