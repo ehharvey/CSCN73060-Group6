@@ -7,7 +7,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/FlightLoggingSoftware/bazel-bin/Client/Main/Main",
-      "args": [],
+      "args": ["localhost", "1"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/FlightLoggingSoftware/Client/",
       "sourceFileMap": {

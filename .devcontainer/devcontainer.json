@@ -18,7 +18,9 @@
     "vscode": {
       "extensions": ["ms-vscode.cpptools-extension-pack", "trunk.io"]
     }
-  }
+  },
+
+  "onCreateCommand": "./.devcontainer/add-bazel.sh"
 
   // Configure tool-specific properties.
   // "customizations": {},
