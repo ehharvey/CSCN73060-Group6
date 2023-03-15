@@ -9,7 +9,7 @@
       "options": {
         "cwd": "${workspaceFolder}/FlightLoggingSoftware"
       },
-      "command": "bazel build --compilation_mode=dbg //...",
+      "command": "./bazel build --compilation_mode=dbg //...",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -21,7 +21,7 @@
       "options": {
         "cwd": "${workspaceFolder}/FlightLoggingSoftware"
       },
-      "command": "bazel build --compilation_mode=dbg //Server/Main",
+      "command": "./bazel build --compilation_mode=dbg //Server/Main",
       "group": {
         "kind": "build",
         "isDefault": true
