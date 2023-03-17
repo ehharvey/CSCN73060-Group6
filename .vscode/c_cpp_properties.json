@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compileCommands": "/home/vscode/.cache/trunk/plugins/https---github-com-trunk-io-plugins/v0.0.11-7784b17d1d8ff658/linters/iwyu/test_data/compile_commands.json"
+        }
+    ],
+    "version": 4
+}
