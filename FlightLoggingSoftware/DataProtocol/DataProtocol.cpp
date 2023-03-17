@@ -21,16 +21,22 @@ ClientTransmission::ClientTransmission(std::byte *buffer) {
   std::memcpy(payload.data(), buffer, PACKET_SIZE);
 }
 
-uint_fast64_t ClientTransmission::getFlightId() {
-  return uint_fast64_t(*(payload.data() + flightIdOffset));
+uint64_t ClientTransmission::getFlightId() {
+  uint64_t result;
+  memcpy(&result, payload.data() + flightIdOffset, sizeof(result));
+  return result;
 }
 
-uint_fast64_t ClientTransmission::getSecondDelta() {
-  return uint_fast64_t(*(payload.data() + secondDeltaOffset));
+uint64_t ClientTransmission::getSecondDelta() {
+  uint64_t result;
+  memcpy(&result, payload.data() + secondDeltaOffset, sizeof(result));
+  return result;
 }
 
-uint_fast64_t ClientTransmission::getFuelLevel() {
-  return uint_fast64_t(*(payload.data() + fuelLevelOffset));
+uint64_t ClientTransmission::getFuelLevel() {
+  uint64_t result;
+  memcpy(&result, payload.data() + fuelLevelOffset, sizeof(result));
+  return result;
 }
 
 std::byte *ClientTransmission::getPayload() { return payload.data(); }
