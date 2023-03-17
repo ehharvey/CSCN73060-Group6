@@ -22,15 +22,15 @@ ClientTransmission::ClientTransmission(std::byte *buffer) {
 }
 
 uint_fast64_t ClientTransmission::getFlightId() {
-  return uint64_t(*(payload.data() + flightIdOffset));
+  return uint_fast64_t(*(payload.data() + flightIdOffset));
 }
 
 uint_fast64_t ClientTransmission::getSecondDelta() {
-  return uint64_t(*(payload.data() + secondDeltaOffset));
+  return uint_fast64_t(*(payload.data() + secondDeltaOffset));
 }
 
 uint_fast64_t ClientTransmission::getFuelLevel() {
-  return uint64_t(*(payload.data() + fuelLevelOffset));
+  return uint_fast64_t(*(payload.data() + fuelLevelOffset));
 }
 
 std::byte *ClientTransmission::getPayload() { return payload.data(); }
