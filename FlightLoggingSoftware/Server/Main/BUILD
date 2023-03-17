@@ -6,6 +6,7 @@ cc_binary(
     deps = [
         "//DataProtocol",
         "//Server/NetworkServer",
-        "@boost//:asio"
+        "@boost//:asio",
+        "//LatencyProfiler"
     ],
 )

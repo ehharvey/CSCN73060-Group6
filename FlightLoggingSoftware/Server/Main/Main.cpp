@@ -1,9 +1,12 @@
 #include "../../DataProtocol/DataProtocol.h"
+#include "../../LatencyProfiler/LatencyProfiler.h"
 #include "../NetworkServer/NetworkServer.h"
 #include <iostream>
 #include <mutex>
 #include <thread>
 #include <unordered_map>
+
+// #define PROFILE_LATENCY
 
 class FuelAverage {
 private:
@@ -48,36 +51,50 @@ int main(void) {
   std::vector<std::thread> threads;
   threads.reserve(num_threads);
 
+#ifdef PROFILE_LATENCY
+  performance_profiler::LatencyRecorder recorder;
+#endif
+
   // Represents a IO Service that can send/receive data
   // Encapsulates an "event-loop" service architecture
   boost::asio::io_service io_service;
-  // Server::NetworkServer s(io_service, 8080); // io service, port
 
-  std::function<void(std::byte *)> test = [&](std::byte *payload) {
-    DataProtocol::ClientTransmission transmission =
-        DataProtocol::ClientTransmission(payload);
-    auto flight_id = transmission.getFlightId();
+  std::function<void(std::byte *)> processTransmission =
+      [&](std::byte *payload) {
+        DataProtocol::ClientTransmission transmission =
+            DataProtocol::ClientTransmission(payload);
 
-    lock.lock();
-    if (fuel_averages.count(flight_id) > 0) {
-      if (transmission.getSecondDelta() == 0) {
-        fuel_averages.at(flight_id).calculateAverage();
-        std::cout << "Flight ID: " << flight_id << " Fuel Average: "
-                  << fuel_averages.at(flight_id).getAverage() << std::endl;
-      } else {
-        fuel_averages.at(flight_id).setFuelCurrent(transmission.getFuelLevel());
-        fuel_averages.at(flight_id).setSecondDelta(
-            transmission.getSecondDelta());
-      }
-    }
-    // No fuel averages exist yet
-    else {
-      fuel_averages.emplace(flight_id, transmission.getFuelLevel());
-    }
-    lock.unlock();
-  };
+#ifdef PROFILE_LATENCY
+        performance_profiler::LatencyMeasurement measurement(workload_ids::SERVER_PROCESS_TRANSMISSION);
+#endif
+        auto flight_id = transmission.getFlightId();
 
-  Server::NetworkServer network_server(io_service, 1234, test);
+        lock.lock();
+        if (fuel_averages.count(flight_id) > 0) {
+          if (transmission.getSecondDelta() == 0) {
+            fuel_averages.at(flight_id).calculateAverage();
+            std::cout << "Flight ID: " << flight_id << " Fuel Average: "
+                      << fuel_averages.at(flight_id).getAverage() << std::endl;
+          } else {
+            fuel_averages.at(flight_id).setFuelCurrent(
+                transmission.getFuelLevel());
+            fuel_averages.at(flight_id).setSecondDelta(
+                transmission.getSecondDelta());
+          }
+        }
+        // No fuel averages exist yet
+        else {
+          fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+        }
+        lock.unlock();
+
+#ifdef PROFILE_LATENCY
+        measurement.end();
+        recorder.add(measurement);
+#endif
+      };
+
+  Server::NetworkServer network_server(io_service, 1234, processTransmission);
 
   for (int i = 0; i < num_threads; i++) {
     threads.push_back(std::thread([&io_service]() { io_service.run(); }));
@@ -86,6 +103,11 @@ int main(void) {
   for (auto &t : threads) {
     t.join();
   }
+
+
+#ifdef PROFILE_LATENCY
+        recorder.saveToDisk();
+#endif
 
   return 0;
 }
