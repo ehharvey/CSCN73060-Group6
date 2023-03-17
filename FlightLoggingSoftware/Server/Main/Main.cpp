@@ -64,6 +64,8 @@ void signal_callback_handler(int signum) {
 
 
 int main(void) {
+  // Register signal and signal handler
+  signal(SIGINT, signal_callback_handler);
   std::mutex lock;
   // Flight ID -> FuelAverage
   std::unordered_map<uint_fast64_t, FuelAverage> fuel_averages;
