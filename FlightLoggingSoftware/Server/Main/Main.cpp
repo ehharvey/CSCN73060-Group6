@@ -4,6 +4,11 @@
 #include <mutex>
 #include <thread>
 #include <unordered_map>
+#include <unistd.h>
+#include <iostream>
+#include <cstdlib>
+#include <signal.h>
+
 
 class FuelAverage {
 private:
@@ -40,7 +45,27 @@ public:
   uint_fast64_t getAverage() { return fuel_average; }
 };
 
+void saveProfilingData(){
+  //Saving Profile Data --> make sure to have profile data global
+  std::cout<<"Saving Profiling Data"<<std::endl;
+
+}
+
+void signal_callback_handler(int signum) {
+   std::cout << "Saving Profiling Data before ending program... " << signum << std::endl;
+  //Saving Profile Data
+   saveProfilingData();
+   // Terminate program
+   std::cout << "Successfully saved Profiling Data. Ending program." << signum << std::endl;
+   exit(signum);
+}
+
+
+
+
 int main(void) {
+  // Register signal and signal handler
+  signal(SIGINT, signal_callback_handler);
   std::mutex lock;
   // Flight ID -> FuelAverage
   std::unordered_map<uint_fast64_t, FuelAverage> fuel_averages;
