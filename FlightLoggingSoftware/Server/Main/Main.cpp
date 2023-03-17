@@ -6,7 +6,7 @@
 #include <thread>
 #include <unordered_map>
 
-// #define PROFILE_LATENCY
+#define PROFILE_LATENCY
 
 class FuelAverage {
 private:

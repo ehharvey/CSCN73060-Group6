@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <filesystem>
+#include <mutex>
 #include <unordered_map>
 #include <fstream>
 #include <chrono>
@@ -45,6 +46,7 @@ namespace performance_profiler {
 	class LatencyRecorder {
 	private:
 		std::unordered_map<ID, std::vector<LatencyMeasurement>> measurements;
+		std::mutex m;
 
 	public:
 		LatencyRecorder();

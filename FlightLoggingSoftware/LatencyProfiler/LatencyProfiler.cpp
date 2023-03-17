@@ -23,8 +23,10 @@ LatencyMeasurement::getElapsedTicks() const {
 LatencyRecorder::LatencyRecorder(){};
 
 void LatencyRecorder::add(LatencyMeasurement lm) {
+  this->m.lock();
   // Constructs a vector if none exists
   this->measurements[lm.getId()].push_back(lm);
+  this->m.unlock();
 }
 
 void LatencyRecorder::saveToDisk(std::filesystem::path path) {
