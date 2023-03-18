@@ -5,6 +5,7 @@ cc_binary(
     srcs = ["Main.cpp"],
     deps = [
         "//Client/NetworkClient",
+        "//Client/CsvReader",
         "//DataProtocol",
         "@boost//:asio"
     ],
