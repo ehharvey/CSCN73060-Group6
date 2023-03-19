@@ -54,6 +54,7 @@ int main(int argc, char *argv[]) {
                                                    DataProtocol::PACKET_SIZE));
 
     // Close the socket
+    socket.shutdown(socket.shutdown_both);
     socket.close();
 
   } catch (std::exception &e) {

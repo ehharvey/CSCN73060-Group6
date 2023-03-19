@@ -37,8 +37,8 @@ class ClientTransmission : public Transmission {
 private:
   std::array<std::byte, PACKET_SIZE> payload;
 public:
-  ClientTransmission(uint_fast64_t flight_id, uint_fast64_t secondDelta,
-                     uint_fast64_t fuelLevel);
+  ClientTransmission(uint64_t flight_id, uint64_t secondDelta,
+                     uint64_t fuelLevel);
 
   ClientTransmission(std::byte* payload);
 

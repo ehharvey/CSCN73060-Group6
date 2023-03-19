@@ -19,6 +19,11 @@ lint:
     - shellcheck@0.9.0
     - shfmt@3.5.0
     - clang-format
+  ignore:
+    - linters: [ALL]
+      paths:
+        - "*/json.hpp"
+        - "*/*/json.hpp"
 runtimes:
   enabled:
     - go@1.19.5
