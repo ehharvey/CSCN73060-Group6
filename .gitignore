@@ -1,6 +1,7 @@
 .vs
 x64
 */*/performance_data/*
+*/performance_data
 
 # Bazel
 bazel-*

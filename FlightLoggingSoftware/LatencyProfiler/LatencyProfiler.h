@@ -40,7 +40,7 @@ namespace performance_profiler {
 
 		ID getId() const;
 
-		std::chrono::duration<int64_t, std::nano> getElapsedTicks() const;
+		std::chrono::duration<int64_t, std::nano> getElapsedNanoSeconds() const;
 	};
 
 	class LatencyRecorder {
