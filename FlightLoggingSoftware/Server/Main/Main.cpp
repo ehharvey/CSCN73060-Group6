@@ -1,20 +1,18 @@
 #include "../../DataProtocol/DataProtocol.h"
 #include "../../LatencyProfiler/LatencyProfiler.h"
 #include "../NetworkServer/NetworkServer.h"
+#include <cstdlib>
 #include <iostream>
 #include <mutex>
-#include <thread>
-#include <unordered_map>
-#include <unistd.h>
-#include <iostream>
-#include <cstdlib>
 #include <signal.h>
+#include <thread>
+#include <unistd.h>
+#include <unordered_map>
 
-
- #define PROFILE_LATENCY
+#define PROFILE_LATENCY
 
 #ifdef PROFILE_LATENCY
-  performance_profiler::LatencyRecorder recorder;
+performance_profiler::LatencyRecorder recorder;
 #endif
 
 class FuelAverage {
@@ -52,26 +50,24 @@ public:
   uint_fast64_t getAverage() { return fuel_average; }
 };
 
-void saveProfilingData(){
-  //Saving Profile Data --> make sure to have profile data global
-  std::cout<<"Saving Profiling Data"<<std::endl;
-  #ifdef PROFILE_LATENCY
+void saveProfilingData() {
+  // Saving Profile Data --> make sure to have profile data global
+  std::cout << "Saving Profiling Data" << std::endl;
+#ifdef PROFILE_LATENCY
   recorder.saveToDisk();
 #endif
-
 }
 
 void signal_callback_handler(int signum) {
-   std::cout << "Saving Profiling Data before ending program... " << signum << std::endl;
-  //Saving Profile Data
-   saveProfilingData();
-   // Terminate program
-   std::cout << "Successfully saved Profiling Data. Ending program." << signum << std::endl;
-   exit(signum);
+  std::cout << "Saving Profiling Data before ending program... " << signum
+            << std::endl;
+  // Saving Profile Data
+  saveProfilingData();
+  // Terminate program
+  std::cout << "Successfully saved Profiling Data. Ending program." << signum
+            << std::endl;
+  exit(signum);
 }
-
-
-
 
 int main(void) {
   // Register signal and signal handler
@@ -83,8 +79,6 @@ int main(void) {
   std::vector<std::thread> threads;
   threads.reserve(num_threads);
 
-
-
   // Represents a IO Service that can send/receive data
   // Encapsulates an "event-loop" service architecture
   boost::asio::io_service io_service;
@@ -93,42 +87,35 @@ int main(void) {
       [&](std::byte *payload) {
         DataProtocol::ClientTransmission transmission =
             DataProtocol::ClientTransmission(payload);
-            lock.lock();
-        std::cout << "FLIGHT ID " << transmission.getFlightId()
-                  << " SECOND DELTA " << transmission.getSecondDelta()
-                  << " FUEL LEVEL " << transmission.getFuelLevel() << std::endl;
-            lock.unlock();
-        #ifdef PROFILE_LATENCY
-                performance_profiler::LatencyMeasurement
-                measurement(workload_ids::SERVER_PROCESS_TRANSMISSION);
-        #endif
-                auto flight_id = transmission.getFlightId();
+#ifdef PROFILE_LATENCY
+        performance_profiler::LatencyMeasurement measurement(
+            workload_ids::SERVER_PROCESS_TRANSMISSION);
+#endif
+        auto flight_id = transmission.getFlightId();
 
-                lock.lock();
-                if (fuel_averages.count(flight_id) > 0) {
-                  if (transmission.getSecondDelta() == 0) {
-                    fuel_averages.at(flight_id).calculateAverage();
-                    std::cout << "Flight ID: " << flight_id << " Fuel Average: "
-                              << fuel_averages.at(flight_id).getAverage() <<
-                              std::endl;
-                  } else {
-                    fuel_averages.at(flight_id).setFuelCurrent(
-                        transmission.getFuelLevel());
-                    fuel_averages.at(flight_id).setSecondDelta(
-                        transmission.getSecondDelta());
-                  }
-                }
-                // No fuel averages exist yet
-                else {
-                  fuel_averages.emplace(flight_id,
-                  transmission.getFuelLevel());
-                }
-                lock.unlock();
+        lock.lock();
+        if (fuel_averages.count(flight_id) > 0) {
+          if (transmission.getSecondDelta() == 0) {
+            fuel_averages.at(flight_id).calculateAverage();
+            std::cout << "Flight ID: " << flight_id << " Fuel Average: "
+                      << fuel_averages.at(flight_id).getAverage() << std::endl;
+          } else {
+            fuel_averages.at(flight_id).setFuelCurrent(
+                transmission.getFuelLevel());
+            fuel_averages.at(flight_id).setSecondDelta(
+                transmission.getSecondDelta());
+          }
+        }
+        // No fuel averages exist yet
+        else {
+          fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+        }
+        lock.unlock();
 
-        #ifdef PROFILE_LATENCY
-                measurement.end();
-                recorder.add(measurement);
-        #endif
+#ifdef PROFILE_LATENCY
+        measurement.end();
+        recorder.add(measurement);
+#endif
       };
 
   Server::NetworkServer network_server(io_service, 1234, processTransmission);

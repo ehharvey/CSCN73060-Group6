@@ -16,8 +16,8 @@ void LatencyMeasurement::end() {
 ID LatencyMeasurement::getId() const { return id; }
 
 std::chrono::duration<int64_t, std::nano>
-LatencyMeasurement::getElapsedTicks() const {
-  return begin - stop;
+LatencyMeasurement::getElapsedNanoSeconds() const {
+  return stop - begin;
 }
 
 LatencyRecorder::LatencyRecorder(){};
@@ -41,27 +41,27 @@ void LatencyRecorder::saveToDisk(std::filesystem::path path) {
   std::filesystem::path todays_date_dir =
       std::filesystem::path(time_sstream.str());
 
-  for (const auto &map : measurements) {
-    std::filesystem::path workload_dir =
-        std::filesystem::path(std::to_string(map.first));
+  for (const auto &measurements_dict_item : measurements) {
+    std::filesystem::path workload_file =
+        std::filesystem::path(std::to_string(measurements_dict_item.first) + ".json");
 
-    std::filesystem::create_directories(path / todays_date_dir / workload_dir);
+    std::filesystem::create_directories(path / todays_date_dir);
 
-    size_t measurement_counter = 0; // Defines the name of measurement file
-    for (const auto &latency_measurement : map.second) {
-      json to_disk;
-      to_disk["id"] = latency_measurement.getId();
+    json j;
+    j["id"] = measurements_dict_item.first;
 
-      to_disk["latency"] = latency_measurement.getElapsedTicks().count();
+    std::vector<int64_t> nanosecond_measurements;
 
-      std::filesystem::path filename =
-          std::filesystem::path(std::to_string(measurement_counter) + ".json");
-      measurement_counter++;
-
-      std::ofstream output(path / todays_date_dir / workload_dir / filename);
-      output << to_disk;
-      output.close();
+    for (auto& latency_measurement : measurements_dict_item.second)
+    {
+      nanosecond_measurements.push_back(latency_measurement.getElapsedNanoSeconds().count());
     }
+
+    j["measurements"] = nanosecond_measurements;
+
+    std::ofstream output(path / todays_date_dir / workload_file );
+    output << j;
+    output.close();
   }
 }
 } // namespace performance_profiler

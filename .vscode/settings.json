@@ -76,7 +76,16 @@
     "mutex": "cpp",
     "semaphore": "cpp",
     "typeindex": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "csetjmp": "cpp",
+    "strstream": "cpp",
+    "cfenv": "cpp",
+    "charconv": "cpp",
+    "rope": "cpp",
+    "slist": "cpp",
+    "scoped_allocator": "cpp",
+    "shared_mutex": "cpp",
+    "span": "cpp"
   },
   "C_Cpp.default.cppStandard": "c++20"
 }
