@@ -40,11 +40,11 @@ int main(int argc, char *argv[]) {
     boost::asio::connect(socket, endpoints);
 
     while (!input.isAtEnd()) {
-      DataProtocol::ClientTransmission *transmission =
-          input.getNextTransmission().release();
-      std::cout << transmission->getFlightId() << " "
-                << transmission->getSecondDelta() << " "
-                << transmission->getFuelLevel() << std::endl;
+      auto transmission =
+          input.getNextTransmission();
+      // std::cout << transmission->getFlightId() << " "
+      //           << transmission->getSecondDelta() << " "
+      //           << transmission->getFuelLevel() << std::endl;
 
       boost::asio::write(socket,
                          boost::asio::buffer(transmission->getPayload(),
@@ -67,6 +67,9 @@ int main(int argc, char *argv[]) {
     DataProtocol::ClientTransmission transmission(Client::flight_id, 0, 0);
     boost::asio::write(socket, boost::asio::buffer(transmission.getPayload(),
                                                    DataProtocol::PACKET_SIZE));
+
+    boost::asio::read(socket,
+        boost::asio::buffer(response, sizeof(response)));
 
     // Close the socket
     socket.shutdown(socket.shutdown_both);
