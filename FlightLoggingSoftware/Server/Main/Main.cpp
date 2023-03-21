@@ -136,7 +136,10 @@ int main(void) {
               lock.unlock();
             }
           }
-          
+          else
+          {
+            lock.unlock();
+          }
         }
 
         // ENTRY SHOULD EXIST BY NOW
