@@ -10,7 +10,7 @@ uint_fast64_t initialTime;
 } // namespace Client
 
 int main(int argc, char *argv[]) {
-  std::array<std::byte, sizeof(DataProtocol::ACK)> response;
+  std::array<std::byte, sizeof(DataProtocol::ACK)> response = { std::byte(100) };
   
   try {
     // First argument is IP or hostname
@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
       
       if (memcmp(response.data(), DataProtocol::ACK.data(), sizeof(response)) == 0)
       {
+        response = { std::byte(100) };
         continue;
       }
       else
