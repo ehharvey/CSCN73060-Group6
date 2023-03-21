@@ -8,6 +8,7 @@
 #include <thread>
 
 #include <unordered_map>
+#include <condition_variable>
 
 #ifdef _WIN32
 #include <io.h>
@@ -93,7 +94,8 @@ void print_transmission(DataProtocol::ClientTransmission t)
 int main(void) {
   // Register signal and signal handler
   signal(SIGINT, signal_callback_handler);
-  std::mutex lock;
+  std::mutex m;
+  std::condition_variable condition;
   // Flight ID -> FuelAverage
   std::unordered_map<uint_fast64_t, FuelAverage> fuel_averages;
   const std::size_t num_threads = std::thread::hardware_concurrency();
@@ -113,25 +115,44 @@ int main(void) {
             workload_ids::SERVER_PROCESS_TRANSMISSION);
 #endif
         auto flight_id = transmission.getFlightId();
+        bool created_entry = false;
 
-        lock.lock();
-        if (fuel_averages.count(flight_id) > 0) {
-          if (transmission.getSecondDelta() == 0) {
-            fuel_averages.at(flight_id).calculateAverage();
-            std::cout << "Flight ID: " << flight_id << " Fuel Average: "
-                      << fuel_averages.at(flight_id).getAverage() << std::endl;
-          } else {
-            fuel_averages.at(flight_id).setFuelCurrent(
-                transmission.getFuelLevel());
-            fuel_averages.at(flight_id).setSecondDelta(
-                transmission.getSecondDelta());
+        if (fuel_averages.count(flight_id) <= 0)
+        {
+          std::unique_lock lock(m);
+          if (fuel_averages.count(flight_id) <= 0)
+          {
+            if (transmission.getSecondDelta() == 0)
+            {
+              fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+              created_entry = true;
+              lock.unlock();
+              condition.notify_all();
+            }
+            else
+            {
+              condition.wait(lock, [&] { return fuel_averages.count(flight_id) <= 0; });
+              lock.unlock();
+            }
+          }
+          else
+          {
+            lock.unlock();
           }
         }
-        // No fuel averages exist yet
-        else {
-          fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+
+        // ENTRY SHOULD EXIST BY NOW
+
+        if ((transmission.getSecondDelta()) == 0 && (!created_entry)) {
+          fuel_averages.at(flight_id).calculateAverage();
+          std::cout << "Flight ID: " << flight_id << " Fuel Average: "
+                    << fuel_averages.at(flight_id).getAverage() << std::endl;
+        } else {
+          fuel_averages.at(flight_id).setFuelCurrent(
+              transmission.getFuelLevel());
+          fuel_averages.at(flight_id).setSecondDelta(
+              transmission.getSecondDelta());
         }
-        lock.unlock();
 
 #ifdef PROFILE_LATENCY
         measurement.end();
