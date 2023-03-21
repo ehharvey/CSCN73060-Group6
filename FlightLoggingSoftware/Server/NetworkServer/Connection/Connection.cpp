@@ -5,15 +5,15 @@ void Connection::handle_read(const boost::system::error_code &error,
   if (!error) {
     callback(this->data_);
 
-    socket_.write_some(
-      boost::asio::buffer(DataProtocol::ACK, sizeof(DataProtocol::ACK))
-    );
-
     socket_.async_read_some(
             boost::asio::buffer(data_, DataProtocol::PACKET_SIZE),
             boost::bind(&Connection::handle_read, this,
                         boost::asio::placeholders::error,
                         boost::asio::placeholders::bytes_transferred));
+
+    socket_.write_some(
+      boost::asio::buffer(DataProtocol::ACK, sizeof(DataProtocol::ACK))
+    );
   } else {
     delete this;
   }
