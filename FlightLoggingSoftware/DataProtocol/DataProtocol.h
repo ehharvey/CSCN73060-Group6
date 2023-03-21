@@ -11,6 +11,8 @@ namespace DataProtocol {
 // 24 bytes total
 const uint_fast8_t PACKET_SIZE = sizeof(uint64_t) * 3;
 
+const std::array<std::byte, 1> ACK = { std::byte(0) };
+
 class Transmission
 {
     public:
