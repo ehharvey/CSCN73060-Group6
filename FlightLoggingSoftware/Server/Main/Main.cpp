@@ -95,7 +95,6 @@ int main(void) {
   // Register signal and signal handler
   signal(SIGINT, signal_callback_handler);
   std::mutex m;
-  std::unique_lock lock(m);
   std::condition_variable condition;
   // Flight ID -> FuelAverage
   std::unordered_map<uint_fast64_t, FuelAverage> fuel_averages;
@@ -120,7 +119,7 @@ int main(void) {
 
         if (fuel_averages.count(flight_id) <= 0)
         {
-          lock.lock();
+          std::unique_lock lock(m);
           if (fuel_averages.count(flight_id) <= 0)
           {
             if (transmission.getSecondDelta() == 0)
