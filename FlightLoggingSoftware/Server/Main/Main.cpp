@@ -8,6 +8,7 @@
 #include <thread>
 
 #include <unordered_map>
+#include <condition_variable>
 
 #ifdef _WIN32
 #include <io.h>
@@ -93,7 +94,9 @@ void print_transmission(DataProtocol::ClientTransmission t)
 int main(void) {
   // Register signal and signal handler
   signal(SIGINT, signal_callback_handler);
-  std::mutex lock;
+  std::mutex m;
+  std::unique_lock lock(m);
+  std::condition_variable condition;
   // Flight ID -> FuelAverage
   std::unordered_map<uint_fast64_t, FuelAverage> fuel_averages;
   const std::size_t num_threads = std::thread::hardware_concurrency();
@@ -113,19 +116,29 @@ int main(void) {
             workload_ids::SERVER_PROCESS_TRANSMISSION);
 #endif
         auto flight_id = transmission.getFlightId();
-        bool created_entry = false;;
+        bool created_entry = false;
 
         if (fuel_averages.count(flight_id) <= 0)
         {
           lock.lock();
           if (fuel_averages.count(flight_id) <= 0)
           {
-            fuel_averages.emplace(flight_id, transmission.getFuelLevel());
-            created_entry = true;
+            if (transmission.getSecondDelta() == 0)
+            {
+              fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+              created_entry = true;
+              lock.unlock();
+              condition.notify_all();
+            }
+            else
+            {
+              condition.wait(lock, [&] { return fuel_averages.count(flight_id) <= 0; });
+              lock.unlock();
+            }
           }
-          lock.unlock();
+          
         }
-        
+
         // ENTRY SHOULD EXIST BY NOW
 
         if ((transmission.getSecondDelta()) == 0 && (!created_entry)) {
