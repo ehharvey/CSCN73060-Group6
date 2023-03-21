@@ -6,8 +6,14 @@
 #include <mutex>
 #include <signal.h>
 #include <thread>
-#include <unistd.h>
+
 #include <unordered_map>
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 // #define PROFILE_LATENCY
 
