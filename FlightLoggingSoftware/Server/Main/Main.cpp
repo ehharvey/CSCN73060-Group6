@@ -113,25 +113,31 @@ int main(void) {
             workload_ids::SERVER_PROCESS_TRANSMISSION);
 #endif
         auto flight_id = transmission.getFlightId();
+        bool created_entry = false;;
 
-        lock.lock();
-        if (fuel_averages.count(flight_id) > 0) {
-          if (transmission.getSecondDelta() == 0) {
-            fuel_averages.at(flight_id).calculateAverage();
-            std::cout << "Flight ID: " << flight_id << " Fuel Average: "
-                      << fuel_averages.at(flight_id).getAverage() << std::endl;
-          } else {
-            fuel_averages.at(flight_id).setFuelCurrent(
-                transmission.getFuelLevel());
-            fuel_averages.at(flight_id).setSecondDelta(
-                transmission.getSecondDelta());
+        if (fuel_averages.count(flight_id) <= 0)
+        {
+          lock.lock();
+          if (fuel_averages.count(flight_id) <= 0)
+          {
+            fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+            created_entry = true;
           }
+          lock.unlock();
         }
-        // No fuel averages exist yet
-        else {
-          fuel_averages.emplace(flight_id, transmission.getFuelLevel());
+        
+        // ENTRY SHOULD EXIST BY NOW
+
+        if ((transmission.getSecondDelta()) == 0 && (!created_entry)) {
+          fuel_averages.at(flight_id).calculateAverage();
+          std::cout << "Flight ID: " << flight_id << " Fuel Average: "
+                    << fuel_averages.at(flight_id).getAverage() << std::endl;
+        } else {
+          fuel_averages.at(flight_id).setFuelCurrent(
+              transmission.getFuelLevel());
+          fuel_averages.at(flight_id).setSecondDelta(
+              transmission.getSecondDelta());
         }
-        lock.unlock();
 
 #ifdef PROFILE_LATENCY
         measurement.end();
