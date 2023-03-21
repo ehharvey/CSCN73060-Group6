@@ -6,10 +6,16 @@
 #include <mutex>
 #include <signal.h>
 #include <thread>
-#include <unistd.h>
+
 #include <unordered_map>
 
-#define PROFILE_LATENCY
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
+// #define PROFILE_LATENCY
 
 #ifdef PROFILE_LATENCY
 performance_profiler::LatencyRecorder recorder;
@@ -67,6 +73,21 @@ void signal_callback_handler(int signum) {
   std::cout << "Successfully saved Profiling Data. Ending program." << signum
             << std::endl;
   exit(signum);
+}
+
+void print_transmission(DataProtocol::ClientTransmission t)
+{
+  static std::mutex m;
+
+  m.lock();
+  std::cout << "-----------------------------------------------" \
+            << std::endl \
+            << "   FLIGHT ID: " << t.getFlightId() << std::endl \
+            << "SECOND DELTA: " << t.getSecondDelta() << std::endl \
+            << "  FUEL LEVEL: " << t.getFuelLevel() << std::endl \
+            << "-----------------------------------------------" \
+            << std::endl;
+  m.unlock();
 }
 
 int main(void) {
