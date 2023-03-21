@@ -10,6 +10,8 @@ uint_fast64_t initialTime;
 } // namespace Client
 
 int main(int argc, char *argv[]) {
+  std::array<std::byte, sizeof(DataProtocol::ACK)> response;
+  
   try {
     // First argument is IP or hostname
     char *ip = argv[1];
@@ -47,6 +49,19 @@ int main(int argc, char *argv[]) {
       boost::asio::write(socket,
                          boost::asio::buffer(transmission->getPayload(),
                                              DataProtocol::PACKET_SIZE));
+
+      boost::asio::read(socket,
+        boost::asio::buffer(response, sizeof(response)));
+      
+      if (memcmp(response.data(), DataProtocol::ACK.data(), sizeof(response)) == 0)
+      {
+        continue;
+      }
+      else
+      {
+        std::cerr << "INVALID RESPONSE RECEIVED!" << std::endl;
+        exit(100);
+      }
     }
 
     DataProtocol::ClientTransmission transmission(Client::flight_id, 0, 0);
