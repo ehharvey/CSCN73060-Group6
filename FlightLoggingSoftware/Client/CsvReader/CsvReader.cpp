@@ -1,6 +1,6 @@
 #include "CsvReader.h"
+#include <ctime>
 #include <regex>
-#include <time.h>
 
 namespace Client {
 
@@ -22,32 +22,38 @@ bool CsvReader::isAtEnd() { return ifs.eof(); }
 std::unique_ptr<DataProtocol::ClientTransmission>
 CsvReader::getNextTransmission() {
   std::string line;
-  struct tm tm {};
+  std::smatch match;
 
   while (std::getline(ifs, line)) {
-    const char *strp_res = strptime(line.c_str(), "%d_%m_%Y %H:%M:%S", &tm);
+    std::regex pattern(R"((\d+)_(\d+)_(\d+) (\d+):(\d+):(\d+),(\d+).(\d+))");
 
-    // If didn't find the time
-    if (strp_res == nullptr)
-      continue;
+    if (std::regex_search(line, match, pattern)) {
+      std::tm datetime{};
+      datetime.tm_mday = std::stoi(match[1]);
+      datetime.tm_mon = std::stoi(match[2]) - 1;     // month is 0 - 11
+      datetime.tm_year = std::stoi(match[3]) - 1900; // year starts from 1900
+      datetime.tm_hour = std::stoi(match[4]);
+      datetime.tm_min = std::stoi(match[5]);
+      datetime.tm_sec = std::stoi(match[6]);
 
-    uint_fast64_t secondDelta = 0;
+      uint_fast64_t secondDelta = 0;
 
-    // First time finding time
-    if (Client::initialTime == 0) {
-      Client::initialTime = std::mktime(&tm);
-    } else {
-      secondDelta = std::mktime(&tm) - Client::initialTime;
+      // First time finding time
+      if (Client::initialTime == 0) {
+        Client::initialTime = std::mktime(&datetime);
+      } else {
+        secondDelta = std::mktime(&datetime) - Client::initialTime;
+      }
+
+      // Fuel Level
+      std::string fuelLevelText = match[7].str() + match[8].str();
+      uint_fast64_t fuelLevel = std::stoi(fuelLevelText);
+
+      return std::unique_ptr<DataProtocol::ClientTransmission>(
+          new DataProtocol::ClientTransmission(Client::flight_id, secondDelta,
+                                               fuelLevel));
     }
-    std::string subString(strp_res + 1);
-    // To get fuel as Int, remove "."
-    uint_fast64_t fuelLevel =
-        std::stoi(subString.erase(subString.find("."), 1));
-
-    return std::unique_ptr<DataProtocol::ClientTransmission>(
-        new DataProtocol::ClientTransmission(Client::flight_id, secondDelta,
-                                             fuelLevel));
   }
+  return nullptr;
 }
-
 } // namespace Client
