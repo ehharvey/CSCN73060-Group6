@@ -10,8 +10,8 @@ uint_fast64_t initialTime;
 } // namespace Client
 
 int main(int argc, char *argv[]) {
-  std::array<std::byte, sizeof(DataProtocol::ACK)> response = { std::byte(100) };
-  
+  std::array<std::byte, sizeof(DataProtocol::ACK)> response = {std::byte(100)};
+
   try {
     // First argument is IP or hostname
     char *ip = argv[1];
@@ -40,8 +40,7 @@ int main(int argc, char *argv[]) {
     boost::asio::connect(socket, endpoints);
 
     while (!input.isAtEnd()) {
-      auto transmission =
-          input.getNextTransmission();
+      auto transmission = input.getNextTransmission();
       // std::cout << transmission->getFlightId() << " "
       //           << transmission->getSecondDelta() << " "
       //           << transmission->getFuelLevel() << std::endl;
@@ -51,15 +50,13 @@ int main(int argc, char *argv[]) {
                                              DataProtocol::PACKET_SIZE));
 
       boost::asio::read(socket,
-        boost::asio::buffer(response, sizeof(response)));
-      
-      if (memcmp(response.data(), DataProtocol::ACK.data(), sizeof(response)) == 0)
-      {
-        response = { std::byte(100) };
+                        boost::asio::buffer(response, sizeof(response)));
+
+      if (memcmp(response.data(), DataProtocol::ACK.data(), sizeof(response)) ==
+          0) {
+        response = {std::byte(100)};
         continue;
-      }
-      else
-      {
+      } else {
         std::cerr << "INVALID RESPONSE RECEIVED!" << std::endl;
         exit(100);
       }
@@ -69,8 +66,7 @@ int main(int argc, char *argv[]) {
     boost::asio::write(socket, boost::asio::buffer(transmission.getPayload(),
                                                    DataProtocol::PACKET_SIZE));
 
-    boost::asio::read(socket,
-        boost::asio::buffer(response, sizeof(response)));
+    boost::asio::read(socket, boost::asio::buffer(response, sizeof(response)));
 
     // Close the socket
     socket.shutdown(socket.shutdown_both);
